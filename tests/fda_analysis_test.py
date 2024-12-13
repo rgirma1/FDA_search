@@ -1,5 +1,9 @@
 
-from app.main import fetch_fda_data, process_pma_data, process_recall_data
+import pytest
+from app.FDAdata import fetch_fda_data, process_pma_data, process_recall_data
+from unittest.mock import patch
+import pandas as pd 
+
 
 # Mock PMA and Recall API responses
 mock_pma_response = {
@@ -29,7 +33,7 @@ class MockResponse:
     def json(self):
         return self.json_data
 
-@patch('app.main.requests.get')
+@patch('app.FDAdata.requests.get')
 def test_fetch_fda_data(mock_get):
     """
     Test fetching FDA data using mocked API responses.
