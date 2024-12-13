@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+</head>
+<body>
+    <h1>Search Results</h1>
+
+    {% if drug_name %}
+        <h2>Drug: {{ drug_name }}</h2>
+    {% elif company_name %}
+        <h2>Company: {{ company_name }}</h2>
+        {% if keyword %}
+            <p>Keyword: {{ keyword }}</p>
+        {% endif %}
+    {% endif %}
+
+    <h3>Premarket Approvals</h3>
+    <pre>{{ pma_data }}</pre>
+
+    <h3>Recalls</h3>
+    <pre>{{ recall_data }}</pre>
+
+    <a href="/">Back to Search</a>
+</body>
+</html>
