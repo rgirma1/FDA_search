@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Search Results</title>
-</head>
-<body>
+{% extends "bootstrap_5_layout.html" %}
+{% set active_page = "by-drug-device" %}
+
+{% block content %}
     <h1>Search Results</h1>
 
     {% if drug_name %}
@@ -22,5 +20,4 @@
     <pre>{{ recall_data }}</pre>
 
     <a href="/">Back to Search</a>
-</body>
-</html>
+{% endblock %}

@@ -3,9 +3,13 @@ from app.FDAdata import fetch_fda_data, process_pma_data, process_recall_data
 
 drugs_bp = Blueprint("drugs", __name__)
 
-@drugs_bp.route("/")
-def home():
-    return render_template("index.html")
+@drugs_bp.route("/openFDA-Search/by-drug-device")
+def by_drug_device():
+    return render_template("by-drug-device.html")
+
+@drugs_bp.route("/openFDA-Search/by-company")
+def by_company():
+    return render_template("by-company.html")
 
 @drugs_bp.route("/search/drug", methods=["GET"])
 def search_drug():
