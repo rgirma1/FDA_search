@@ -1,23 +1,20 @@
 {% extends "bootstrap_5_layout.html" %}
-{% set active_page = "by-drug-device" %}
+{% set active_page = "drug-recalls" %}
 
 {% block content %}
     <h1>Search Results</h1>
+    <h2>{{search_type | capitalize}}: {{ search_term }}</h2>
 
-    {% if drug_name %}
-        <h2>Drug: {{ drug_name }}</h2>
-    {% elif company_name %}
-        <h2>Company: {{ company_name }}</h2>
+    {% if search_type == 'drug' or search_type == 'company' %}
+        <h3>Recalls</h3>
+        <pre>{{ recall_data }}</pre>
+    {% elif search_type == 'company' or search_type == 'device' %}
+        <h3>Premarket Approvals</h3>
+        <pre>{{ pma_data }}</pre>
         {% if keyword %}
             <p>Keyword: {{ keyword }}</p>
         {% endif %}
     {% endif %}
 
-    <h3>Premarket Approvals</h3>
-    <pre>{{ pma_data }}</pre>
-
-    <h3>Recalls</h3>
-    <pre>{{ recall_data }}</pre>
-
-    <a href="/">Back to Search</a>
+    <a href="/openFDA-Search/{{search_type}}">Back to Search</a>
 {% endblock %}

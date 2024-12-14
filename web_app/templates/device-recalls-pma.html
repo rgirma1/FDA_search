@@ -1,0 +1,15 @@
+{% extends "bootstrap_5_layout.html" %}
+{% set active_page = "device-recalls-pma" %}
+
+{% block content %}
+    <h1>Search for Premarket Medical Device Approvals</h1>
+    <form action="/search/drug" method="get">
+        <input type="text" name="drug_name" placeholder="Enter drug name">
+        <button type="submit">Search Drug</button>
+    </form>
+    <h1>Search for Medical Device Recalls</h1>
+    <form action="/search/drug" method="get">
+        <input type="text" name="drug_name" placeholder="Enter drug name">
+        <button type="submit">Search Drug</button>
+    </form>
+{% endblock %}
