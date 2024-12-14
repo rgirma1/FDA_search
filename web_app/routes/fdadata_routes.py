@@ -1,17 +1,25 @@
 from flask import Blueprint, request, render_template, jsonify
 from app.FDAdata import fetch_fda_data, process_pma_data, process_recall_data
 
-drugs_bp = Blueprint("drugs", __name__)
+fdadata_routes = Blueprint("fdadata_routes", __name__)
 
-@drugs_bp.route("/openFDA-Search/by-drug-device")
-def by_drug_device():
-    return render_template("by-drug-device.html")
+@fdadata_routes.route("/openFDA-Search/drug-recalls")
+def drug_recalls():
+    return render_template("drug-recalls.html")
 
-@drugs_bp.route("/openFDA-Search/by-company")
+@fdadata_routes.route("/openFDA-Search/device-recalls-pma")
+def device_recalls_pma():
+    return render_template("device-recalls-pma.html")
+
+@fdadata_routes.route("/openFDA-Search/by-company")
 def by_company():
     return render_template("by-company.html")
 
-@drugs_bp.route("/search/drug", methods=["GET"])
+
+
+
+
+@fdadata_routes.route("/search/drug", methods=["GET"])
 def search_drug():
     drug_name = request.args.get("drug_name")
     if not drug_name:
@@ -24,7 +32,7 @@ def search_drug():
 
     return render_template("results.html", drug_name=drug_name, pma_data=pma_data, recall_data=recall_data)
 
-@drugs_bp.route("/search/device", methods=["GET"])
+@fdadata_routes.route("/search/device", methods=["GET"])
 def search_device():
     company_name = request.args.get("company_name")
     keyword = request.args.get("keyword")
