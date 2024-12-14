@@ -3,8 +3,9 @@
 
 {% block content %}
     <h1>Search for Drug Recalls</h1>
-    <form action="/search/drug" method="get">
-        <input type="text" name="drug_name" placeholder="Enter drug name">
+    <form action="/search_result" method="get">
+        <input type="hidden" name="search_type" value="drug">
+        <input type="text" name="search_term" placeholder="Enter drug name">
         <button type="submit">Search Drug</button>
     </form>
     

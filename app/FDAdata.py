@@ -18,26 +18,24 @@ def fetch_fda_data(type, search_term):
     Returns:
         tuple: JSON data for PMAs and recalls.
     """
+    
+    search_term = search_term.replace(" ", "+")
 
-    if type = "company":
-        search_term = search_term.replace(" ", "+")
+    if type == "company":
         pma_query = f'https://api.fda.gov/device/pma.json?search=applicant:"{search_term}"&sort=decision_date:desc&limit=5'
         recall_query = f'https://api.fda.gov/device/recall.json?search=recalling_firm:"{search_term}"&sort=event_date_posted:desc&limit=5'
-    elif type = "drug"
+    elif type == "drug":
         recall_query = f'https://api.fda.gov/drug/enforcement.json?search=product_description:"{search_term}"&sort=recall_initiation_date:desc&limit=5'
-    elif type = "device"
+        pma_query = 'https://api.fda.gov/device/recall.json?error'
+    elif type == "device":
         pma_query = f'https://api.fda.gov/device/pma.json?search=trade_name:"{search_term}"&sort=decision_date:desc&limit=5'
         recall_query = f'https://api.fda.gov/device/recall.json?search=product_description:"{search_term}"&sort=event_date_posted:desc&limit=5'
-    
-
 
     pma_response = requests.get(pma_query)
     recall_response = requests.get(recall_query)
 
-    if pma_response.status_code == 200 and recall_response.status_code == 200:
-        return pma_response.json(), recall_response.json()
-    return None, None
-
+    return pma_response.json(), recall_response.json()
+    
 def process_pma_data(pma_data):
     """
     Process PMA data into a pandas DataFrame.
