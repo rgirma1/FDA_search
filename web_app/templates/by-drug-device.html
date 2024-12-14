@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>FDA Search</title>
-</head>
-<body>
+{% extends "bootstrap_5_layout.html" %}
+{% set active_page = "by-drug-device" %}
+
+{% block content %}
     <h1>FDA Search</h1>
     <form action="/search/drug" method="get">
         <input type="text" name="drug_name" placeholder="Enter drug name">
@@ -15,5 +13,5 @@
         <input type="text" name="keyword" placeholder="Enter keyword">
         <button type="submit">Search Device</button>
     </form>
-</body>
-</html>
+    
+{% endblock %}
