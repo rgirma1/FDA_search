@@ -6,19 +6,30 @@ import plotly.express as px
 
 pd.options.mode.copy_on_write = True
 
-def fetch_fda_data(company):
+def fetch_fda_data(type, search_term):
     """
     Fetch PMA and recall data for a medical company from OpenFDA.
 
     Args:
-        company (str): The name of the medical company.
+        
+        type (str): type of search (limited to: 'company', 'drug', 'device')
+        search (str): The name of the medical company.
 
     Returns:
         tuple: JSON data for PMAs and recalls.
     """
-    company = company.replace(" ", "+")
-    pma_query = f'https://api.fda.gov/device/pma.json?search=applicant:"{company}"&sort=decision_date:desc&limit=1000'
-    recall_query = f'https://api.fda.gov/device/recall.json?search=recalling_firm:"{company}"&sort=event_date_posted:desc&limit=1000'
+
+    if type = "company":
+        search_term = search_term.replace(" ", "+")
+        pma_query = f'https://api.fda.gov/device/pma.json?search=applicant:"{search_term}"&sort=decision_date:desc&limit=5'
+        recall_query = f'https://api.fda.gov/device/recall.json?search=recalling_firm:"{search_term}"&sort=event_date_posted:desc&limit=5'
+    elif type = "drug"
+        recall_query = f'https://api.fda.gov/drug/enforcement.json?search=product_description:"{search_term}"&sort=recall_initiation_date:desc&limit=5'
+    elif type = "device"
+        pma_query = f'https://api.fda.gov/device/pma.json?search=trade_name:"{search_term}"&sort=decision_date:desc&limit=5'
+        recall_query = f'https://api.fda.gov/device/recall.json?search=product_description:"{search_term}"&sort=event_date_posted:desc&limit=5'
+    
+
 
     pma_response = requests.get(pma_query)
     recall_response = requests.get(recall_query)
