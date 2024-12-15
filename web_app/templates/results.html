@@ -8,6 +8,26 @@
     {% if search_type == 'drug' or search_type == 'company' %}
         <h3>Recalls</h3>
         <pre>{{ recall_data }}</pre>
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>Product Description</td>
+                    <td>Recalling Firm</td>
+                    <td>Reason for Recalling</td>
+                    <td>Initiation Date</td>
+                </tr>
+            </thead>
+            <tbody>
+        {% for r in recall_data %}
+            <tr>
+                <td>{{r['product_description']}}</td>
+                <td>{{r['recalling_firm']}}</td>
+                <td>{{r['reason_for_recall']}}</td>
+                <td>{{r['recall_initiation_date']}}</td>
+            </tr>
+        {% endfor %}
+            </tbody>
+        </table>
     {% elif search_type == 'company' or search_type == 'device' %}
         <h3>Premarket Approvals</h3>
         <pre>{{ pma_data }}</pre>
@@ -17,6 +37,4 @@
     {% endif %}
 
     <a href="/openFDA-Search/{{search_type}}">Back to Search</a>
-{% endblock %}
-
 {% endblock %}

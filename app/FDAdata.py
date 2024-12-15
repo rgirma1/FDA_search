@@ -34,7 +34,16 @@ def fetch_fda_data(type, search_term):
     pma_response = requests.get(pma_query)
     recall_response = requests.get(recall_query)
 
-    return pma_response.json(), recall_response.json()
+    pma_data =  pma_response.json()
+    recall_data = recall_response.json()
+
+    if "error" not in pma_data:
+        pma_data = pma_data["results"]
+
+    if "error" not in recall_data:
+        recall_data = recall_data["results"]
+
+    return pma_data, recall_data
     
 def process_pma_data(pma_data):
     """

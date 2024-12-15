@@ -1,5 +1,6 @@
 from flask import Blueprint, request, render_template, jsonify
 from app.FDAdata import fetch_fda_data, process_pma_data, process_recall_data
+import pandas as pd
 
 fdadata_routes = Blueprint("fdadata_routes", __name__)
 
@@ -14,6 +15,7 @@ def drug_recalls():
     return render_template("drug-recalls.html")
 
 @fdadata_routes.route("/openFDA-Search/device")
+@fdadata_routes.route("/openFDA-Search/device-recalls-pma")
 def device_recalls_pma():
     return render_template("device-recalls-pma.html")
 
