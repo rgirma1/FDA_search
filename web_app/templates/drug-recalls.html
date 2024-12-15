@@ -2,11 +2,15 @@
 {% set active_page = "drug-recalls" %}
 
 {% block content %}
-    <h1>Search for Drug Recalls</h1>
-    <form action="/search_result" method="get">
+    <h1>Search for Recent Drug Recalls</h1>
+    <form action="/search_drug" method="get">
         <input type="hidden" name="search_type" value="drug">
         <input type="text" name="search_term" placeholder="Enter drug name">
         <button type="submit">Search Drug</button>
     </form>
-    
+    <form action="/search_drug" method="get">
+        <input type="hidden" name="search_type" value="company">
+        <input type="text" name="search_term" placeholder="Enter company name">
+        <button type="submit">Search Company</button>
+    </form>
 {% endblock %}

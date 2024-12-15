@@ -1,0 +1,31 @@
+{% extends "bootstrap_5_layout.html" %}
+{% set active_page = "drug-recalls" %}
+
+{% block content %}
+    <h1>Search Results</h1>
+    <h2>{{search_type | capitalize}}: {{ search_term }}</h2>
+
+    <h3>Recalls</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Product Description</td>
+                <td>Recalling Firm</td>
+                <td>Reason for Recalling</td>
+                <td>Date</td>
+            </tr>
+        </thead>
+        <tbody>
+    {% for r in recall_data %}
+        <tr>
+            <td>{{r['product_description']}}</td>
+            <td>{{r['recalling_firm']}}</td>
+            <td>{{r['reason_for_recall']}}</td>
+            <td>{{r['recall_initiation_date']}}</td>
+        </tr>
+    {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="/openFDA-Search/drug-recalls">Back to Search</a>
+{% endblock %}

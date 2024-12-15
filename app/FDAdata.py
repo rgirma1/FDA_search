@@ -6,7 +6,35 @@ import plotly.express as px
 
 pd.options.mode.copy_on_write = True
 
-def fetch_fda_data(type, search_term):
+def fetch_drug_data(type, search_term):
+    """
+    Fetch PMA and recall data for a medical company from OpenFDA.
+
+    Args:
+        
+        type (str): type of search (limited to: 'company', 'drug', 'device')
+        search (str): The name of the medical company.
+
+    Returns:
+        tuple: JSON data for PMAs and recalls.
+    """
+    
+    search_term = search_term.replace(" ", "+")
+
+    if type == "company":
+        recall_query = f'https://api.fda.gov/drug/enforcement.json?search=recalling_firm:"{search_term}"&sort=recall_initiation_date:desc&limit=5'
+    elif type == "drug":
+        recall_query = f'https://api.fda.gov/drug/enforcement.json?search=product_description:"{search_term}"&sort=recall_initiation_date:desc&limit=5'
+        
+    recall_response = requests.get(recall_query)
+    recall_data = recall_response.json()
+
+    if "error" not in recall_data:
+        recall_data = recall_data["results"]
+
+    return recall_data
+
+def fetch_device_data(type, search_term):
     """
     Fetch PMA and recall data for a medical company from OpenFDA.
 
