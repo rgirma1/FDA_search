@@ -2,14 +2,15 @@
 {% set active_page = "device-recalls-pma" %}
 
 {% block content %}
-    <h1>Search for Premarket Medical Device Approvals</h1>
-    <form action="/search/drug" method="get">
-        <input type="text" name="drug_name" placeholder="Enter drug name">
-        <button type="submit">Search Drug</button>
+    <h1>Search for Premarket Medical Device Approvals and Recalls</h1>
+    <form action="/search_device" method="get">
+        <input type="hidden" name="search_type" value="device">
+        <input type="text" name="search_term" placeholder="Enter Device name">
+        <button type="submit">Search Device</button>
     </form>
-    <h1>Search for Medical Device Recalls</h1>
-    <form action="/search/drug" method="get">
-        <input type="text" name="drug_name" placeholder="Enter drug name">
-        <button type="submit">Search Drug</button>
+    <form action="/search_device" method="get">
+        <input type="hidden" name="search_type" value="company">
+        <input type="text" name="search_term" placeholder="Enter company name">
+        <button type="submit">Search Company</button>
     </form>
 {% endblock %}

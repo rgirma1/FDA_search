@@ -22,9 +22,9 @@ def fetch_drug_data(type, search_term):
     search_term = search_term.replace(" ", "+")
 
     if type == "company":
-        recall_query = f'https://api.fda.gov/drug/enforcement.json?search=recalling_firm:"{search_term}"&sort=recall_initiation_date:desc&limit=5'
+        recall_query = f'https://api.fda.gov/drug/enforcement.json?search=recalling_firm:"{search_term}"&sort=recall_initiation_date:desc&limit=10'
     elif type == "drug":
-        recall_query = f'https://api.fda.gov/drug/enforcement.json?search=product_description:"{search_term}"&sort=recall_initiation_date:desc&limit=5'
+        recall_query = f'https://api.fda.gov/drug/enforcement.json?search=product_description:"{search_term}"&sort=recall_initiation_date:desc&limit=10'
         
     recall_response = requests.get(recall_query)
     recall_data = recall_response.json()
@@ -50,14 +50,11 @@ def fetch_device_data(type, search_term):
     search_term = search_term.replace(" ", "+")
 
     if type == "company":
-        pma_query = f'https://api.fda.gov/device/pma.json?search=applicant:"{search_term}"&sort=decision_date:desc&limit=5'
-        recall_query = f'https://api.fda.gov/device/recall.json?search=recalling_firm:"{search_term}"&sort=event_date_posted:desc&limit=5'
-    elif type == "drug":
-        recall_query = f'https://api.fda.gov/drug/enforcement.json?search=product_description:"{search_term}"&sort=recall_initiation_date:desc&limit=5'
-        pma_query = 'https://api.fda.gov/device/recall.json?error'
+        pma_query = f'https://api.fda.gov/device/pma.json?search=applicant:"{search_term}"&sort=decision_date:desc&limit=10'
+        recall_query = f'https://api.fda.gov/device/recall.json?search=recalling_firm:"{search_term}"&sort=event_date_posted:desc&limit=10'
     elif type == "device":
-        pma_query = f'https://api.fda.gov/device/pma.json?search=trade_name:"{search_term}"&sort=decision_date:desc&limit=5'
-        recall_query = f'https://api.fda.gov/device/recall.json?search=product_description:"{search_term}"&sort=event_date_posted:desc&limit=5'
+        pma_query = f'https://api.fda.gov/device/pma.json?search=trade_name:"{search_term}"&search=decision_code:"APPR"$sort=decision_date:desc&limit=10'
+        recall_query = f'https://api.fda.gov/device/recall.json?search=product_description:"{search_term}"&sort=event_date_posted:desc&limit=10'
 
     pma_response = requests.get(pma_query)
     recall_response = requests.get(recall_query)

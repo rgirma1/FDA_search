@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, jsonify
+from flask import Blueprint, request, render_template, flash, jsonify
 from app.FDAdata import fetch_drug_data, fetch_device_data, process_pma_data, process_recall_data
 import pandas as pd
 
@@ -15,17 +15,18 @@ def device_recalls_pma():
     return render_template("device-recalls-pma.html")
 
 
+# result forms
+
 @fdadata_routes.route("/search_drug", methods=["GET"])
 def search_result_drug():
     search_type = request.args.get("search_type")
     search_term = request.args.get("search_term")
     if not search_term:
-        return jsonify({"error": "Search term is required"}), 400
-
+        raise Exception(f'Please enter a {search_type}')
     recall_data = fetch_drug_data(search_type, search_term)
 
-    if not recall_data:
-        return jsonify({"error": "No data found for the drug"}), 404
+    if 'error' in recall_data:
+        raise Exception('No results found.')
 
     return render_template("results-drug.html", search_type=search_type, search_term=search_term, recall_data=recall_data)
 

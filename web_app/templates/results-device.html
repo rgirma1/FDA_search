@@ -21,18 +21,87 @@
             <td>{{r['product_description']}}</td>
             <td>{{r['recalling_firm']}}</td>
             <td>{{r['reason_for_recall']}}</td>
-            <td>{{r['recall_initiation_date']}}</td>
+            <td>{{r['event_date_posted']}}</td>
         </tr>
     {% endfor %}
         </tbody>
     </table>
-    {% elif search_type == 'company' or search_type == 'device' %}
-        <h3>Premarket Approvals</h3>
-        <pre>{{ pma_data }}</pre>
-        {% if keyword %}
-            <p>Keyword: {{ keyword }}</p>
-        {% endif %}
-    {% endif %}
+
+    <h3>Premarket Approvals</h3>
+    <p>
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            See Decision Code Definitions
+        </button>
+    </p>
+    <div class="collapse" id="collapseExample">
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>Decision Code</td>
+                    <td>Definition</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>APPR</td>
+                    <td>Approval: PMA has been approved. </td>
+                </tr>
+                <tr>
+                    <td>OK30</td>
+                    <td>Approval: Applicant may distribute the device 30 days after following addtional FDA measures. </td>
+                </tr>
+                <tr>
+                    <td>WTDR</td>
+                    <td>Withdrawal: PMA has been withdrawn.</td>
+                </tr>
+                <tr>
+                    <td>DENY</td>
+                    <td>Denial: PMA has been denied.</td>
+                </tr>
+                <tr>
+                    <td>LE30</td>
+                    <td>30 day notice acceptance (decision made in ≤30 days).</td>
+                </tr>
+                <tr>
+                    <td>APRL</td>
+                    <td>Reclassification after approval.</td>
+                </tr>
+                <tr>
+                    <td>APWD</td>
+                    <td>Withdrawal after approval.</td>
+                </tr>
+                <tr>
+                    <td>GT30</td>
+                    <td>No decision made in 30 days.</td>
+                </tr>
+                <tr>
+                    <td>APCV</td>
+                    <td>Conversion after approval.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Trade Name</td>
+                <td>Appicant</td>
+                <td>Decision Code</td>
+                <td>Date</td>
+            </tr>
+        </thead>
+        <tbody>
+    {% for r in pma_data %}
+        <tr>
+            <td>{{r['trade_name']}}</td>
+            <td>{{r['applicant']}}</td>
+            <td>{{r['decision_code']}}</td>
+            <td>{{r['decision_date']}}</td>
+        </tr>
+    {% endfor %}
+        </tbody>
+    </table>
 
     <a href="/openFDA-Search/{{search_type}}">Back to Search</a>
 {% endblock %}
