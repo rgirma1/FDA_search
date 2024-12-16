@@ -1,0 +1,26 @@
+{% extends "bootstrap_5_layout.html" %}
+{% set active_page = "Features" %}
+
+{% block content %}
+    <h1>Features</h1>
+    <p>
+        Utlizing the OpenFDA API, InvestMed allows you search OpenFDA 
+        for drug and device recalls and device premarket approvals (PMAs).
+        By using the AlphaVantage API, InvestMed allows investors to see
+        if there is a correlation between stock price and recalls or PMAs.
+    </p>
+    <h2>OpenFDA Search</h2>
+    <p>Search drug recalls:</p>
+    <ul>
+        <li>by drug</li>
+        <li>by company</li>
+    </ul>
+    <p>Search device recalls and PMAs:</p>
+    <ul>
+        <li>by device</li>
+        <li>by company</li>
+    </ul>
+    <h2>Stock Correlation</h2>
+    <p>Graph stock prices with openFDA data by puting in a company and its respective stock ticker symbol.</p>
+
+{% endblock %}
