@@ -50,11 +50,11 @@ def fetch_device_data(type, search_term):
     search_term = search_term.replace(" ", "+")
 
     if type == "company":
-        pma_query = f'https://api.fda.gov/device/pma.json?search=applicant:"{search_term}"&sort=decision_date:desc&limit=10'
-        recall_query = f'https://api.fda.gov/device/recall.json?search=recalling_firm:"{search_term}"&sort=event_date_posted:desc&limit=10'
+        pma_query = f'https://api.fda.gov/device/pma.json?search=applicant:"{search_term}"&sort=decision_date:desc&limit=1000'
+        recall_query = f'https://api.fda.gov/device/recall.json?search=recalling_firm:"{search_term}"&sort=event_date_posted:desc&limit=1000'
     elif type == "device":
-        pma_query = f'https://api.fda.gov/device/pma.json?search=trade_name:"{search_term}"&search=decision_code:"APPR"$sort=decision_date:desc&limit=10'
-        recall_query = f'https://api.fda.gov/device/recall.json?search=product_description:"{search_term}"&sort=event_date_posted:desc&limit=10'
+        pma_query = f'https://api.fda.gov/device/pma.json?search=trade_name:"{search_term}"&search=decision_code:"APPR"$sort=decision_date:desc&limit=1000'
+        recall_query = f'https://api.fda.gov/device/recall.json?search=product_description:"{search_term}"&sort=event_date_posted:desc&limit=1000'
 
     pma_response = requests.get(pma_query)
     recall_response = requests.get(recall_query)
@@ -82,7 +82,9 @@ def process_pma_data(pma_data):
     """
     df = pd.DataFrame(pma_data)
     df['decision_date'] = pd.to_datetime(df['decision_date'].astype("string"))
-    return df[df['decision_code'] == "APPR"]
+    df = df[(df['decision_code'] == "APPR") | (df['decision_code'] == "OK30") | (df['decision_code'] == "LE30")]
+    approvals_by_date = df.groupby(df['decision_date'].dt.date).size().reset_index(name='count')
+    return approvals_by_date
 
 def process_recall_data(recall_data):
     """
@@ -95,21 +97,11 @@ def process_recall_data(recall_data):
         pd.DataFrame: Processed DataFrame.
     """
     df = pd.DataFrame(recall_data)
-    df['event_date_posted'] = pd.to_datetime(df['event_date_posted'].astype("string"))
-    return df
 
-def plot_data(df, date_column, count_column, title, x_label, y_label):
-    """
-    Plot data using Plotly.
+    if "event_date_initiated" in df.columns:
+        df.rename(columns={"event_date_initiated": "recall_initiation_date"}, inplace=True)
+    
+    df['recall_initiation_date'] = pd.to_datetime(df['recall_initiation_date'].astype("string"))
+    recalls_by_date = df.groupby(df['recall_initiation_date'].dt.date).size().reset_index(name='count')
 
-    Args:
-        df (pd.DataFrame): DataFrame to plot.
-        date_column (str): Date column name.
-        count_column (str): Count column name.
-        title (str): Plot title.
-        x_label (str): X-axis label.
-        y_label (str): Y-axis label.
-    """
-    counts_by_date = df.groupby(df[date_column].dt.date).size().reset_index(name=count_column)
-    fig = px.line(counts_by_date, x=date_column, y=count_column, title=title, labels={date_column: x_label, count_column: y_label})
-    fig.show()
+    return recalls_by_date

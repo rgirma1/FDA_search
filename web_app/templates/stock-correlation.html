@@ -3,5 +3,30 @@
 
 {% block content %}
     <h1>Stock Correlation</h1>
-
-{% endblock %}
+    <form action="/stock_correlation_dashboard" method="post">
+        <div>
+            <input type="text" name="company" placeholder="Enter company name">
+        </div>
+        <div style="margin-top:10px">
+            <input type="text" name="symbol" placeholder="Enter symbol name">
+        </div>
+        <div style="margin-top:10px" class="btn-group" role="group" aria-label="Basic daterange toggle button group">
+            
+            <input type="radio" class="btn-check" id="radio1" name="btndaterange" value="5Y" checked>
+            <label class="btn btn-outline-primary" for="radio1">5Y</label>
+        
+            <input type="radio" class="btn-check" id="radio2" name="btndaterange" value="1Y">
+            <label class="btn btn-outline-primary" for="radio2">1Y</label>
+        
+            <input type="radio" class="btn-check" id="radio3" name="btndaterange" value="6M">
+            <label class="btn btn-outline-primary" for="radio3">6M</label>
+        
+            <input type="radio" class="btn-check" id="radio4" name="btndaterange" value="1M">
+            <label class="btn btn-outline-primary" for="radio4">1M</label>
+            
+        </div>
+        <div style="margin-top:10px">
+            <button type="submit">Generate Graphs</button>
+        </div>
+    </form>
+{% endblock %} 

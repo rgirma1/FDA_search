@@ -24,6 +24,7 @@ def search_result_drug():
     if not search_term:
         raise Exception(f'Please enter a {search_type}')
     recall_data = fetch_drug_data(search_type, search_term)
+    recall_data = recall_data[:10]
 
     if 'error' in recall_data:
         raise Exception('No results found.')
@@ -38,6 +39,8 @@ def search_result_device():
         return jsonify({"error": "Search term is required"}), 400
 
     pma_data, recall_data = fetch_device_data(search_type, search_term)
+    recall_data = recall_data[:10]
+    pma_data = pma_data[:10]
 
     if not recall_data:
         return jsonify({"error": "No data found for the drug"}), 404
