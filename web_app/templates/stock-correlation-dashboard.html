@@ -24,6 +24,7 @@
         var decision_date = pmaData.map(obj => obj["decision_date"])
         var count = pmaData.map(obj => obj["count"])
 
+
         // visualize the data
         // see: https://plotly.com/javascript/line-charts/
         
@@ -75,11 +76,13 @@
     var stockData = JSON.parse('{{stock_data | tojson}}') // https://stackoverflow.com/a/45132694/670433
     var pmaData = JSON.parse('{{pma_data | tojson}}')
 
+    var pmaDataSorted = pmaData.sort((a, b) => new Date(a["decision_date"]) - new Date(b["decision_date"]))
+
     var dates = stockData.map(obj => obj["timestamp"])
     var closingPrices = stockData.map(obj => obj["adjusted_close"])
 
-    var decision_date = pmaData.map(obj => obj["decision_date"])
-    var count = pmaData.map(obj => obj["count"])
+    var decision_date = pmaDataSorted.map(obj => obj["decision_date"])
+    var count = pmaDataSorted.map(obj => obj["count"])
 
     // visualize the data
     // see: https://plotly.com/javascript/line-charts/

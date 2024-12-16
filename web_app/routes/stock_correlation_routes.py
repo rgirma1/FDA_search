@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template, jsonify
-from app.FDAdata import fetch_drug_data, fetch_device_data, process_pma_data, process_recall_data
+from app.FDAdata import fetch_drug_data, fetch_device_data, process_pma_data, process_recall_data, date_range_filter
 from app.stockcorrelation import fetch_stocks_csv
 
 stock_correlation_routes = Blueprint("stock_correlation", __name__)
@@ -22,6 +22,7 @@ def stock_correlation_dashboard():
     
     symbol = request_data.get("symbol")
     company = request_data.get("company")
+    timeoffset = request_data.get("btndaterange")
 
     stock = fetch_stocks_csv(symbol)
     
@@ -34,7 +35,16 @@ def stock_correlation_dashboard():
     devicerecall = process_recall_data(device_recall_data)
     pma = process_pma_data(device_pma_data)
 
+    print(pma.loc[pma['count'] == 14])
+
     # insert code for timeframes
+
+    stock = date_range_filter(timeoffset, stock)
+    pma = date_range_filter(timeoffset, pma)
+
+    print(pma)
+    print("---------------------")
+    print(stock)
 
     # convert everything to dictionary
     stock = stock.to_dict("records")

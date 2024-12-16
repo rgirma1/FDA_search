@@ -2,7 +2,9 @@
 
 import requests
 import pandas as pd
+import datetime
 import plotly.express as px
+from dateutil.relativedelta import relativedelta
 
 pd.options.mode.copy_on_write = True
 
@@ -84,6 +86,8 @@ def process_pma_data(pma_data):
     df['decision_date'] = pd.to_datetime(df['decision_date'].astype("string"))
     df = df[(df['decision_code'] == "APPR") | (df['decision_code'] == "OK30") | (df['decision_code'] == "LE30")]
     approvals_by_date = df.groupby(df['decision_date'].dt.date).size().reset_index(name='count')
+    approvals_by_date = approvals_by_date.sort_values(by=['decision_date'])
+    approvals_by_date['decision_date'] = pd.to_datetime(df['decision_date'].astype("string"))
     return approvals_by_date
 
 def process_recall_data(recall_data):
@@ -105,3 +109,43 @@ def process_recall_data(recall_data):
     recalls_by_date = df.groupby(df['recall_initiation_date'].dt.date).size().reset_index(name='count')
 
     return recalls_by_date
+
+def date_range_filter(time, df):
+
+    today = datetime.datetime.today()
+
+    if time == "1M": m = 1
+    if time == "6M": m = 6
+    if time == "1Y": m = 12
+    if time == "5Y": m = 60
+
+    # Calculate one month from today
+    months_later = today + relativedelta(months=m)
+
+    print("---startoffunction----")
+    print(today)
+    print(months_later)
+    print(type(today))
+    print(type(months_later))
+    print(df.dtypes)
+    print("-------")
+
+    # Filter the dataframe
+    if "decision_date" in df.columns:
+        filtered_df = df[(df['decision_date'] >= today) & (df['decision_date'] < months_later)]
+    if "timestamp" in df.columns:
+        filtered_df = df[(df['timestamp'] >= today) & (df['timestamp'] < months_later)]
+
+    print(filtered_df)
+
+    # offset = datetime.datetime.now() - pd.DateOffset(months=m)
+
+    #if "recall_initiation_date" in df.columns:
+     #   df = df[(df["recall_initiation_date"] >= offset.replace(day=1)) & (df['date'] < offset.replace(day=1) + pd.DateOffset(months=m))]
+
+    #if "decision_date" in df.columns:
+     #   df = df[(df["decision_date"] >= offset.replace(day=1)) & (df['date'] < offset.replace(day=1) + pd.DateOffset(months=m))]
+
+
+    # Filter the dataframe
+    return filtered_df
