@@ -9,18 +9,19 @@ from dateutil.relativedelta import relativedelta
 pd.options.mode.copy_on_write = True
 
 def fetch_drug_data(type, search_term):
-    """
-    Fetch PMA and recall data for a medical company from OpenFDA.
+    '''
+    Fetch drug recall data from OpenFDA API
 
     Args:
-        
-        type (str): type of search (limited to: 'company', 'drug', 'device')
-        search (str): The name of the medical company.
+        type (str): type of search term used ("company" or "drug")
+        search_term (str): input by the user
 
     Returns:
-        tuple: JSON data for PMAs and recalls.
-    """
+        recall_data (json)
+
+    '''
     
+    # request data from openFDA API
     search_term = search_term.replace(" ", "+")
 
     if type == "company":
@@ -31,31 +32,33 @@ def fetch_drug_data(type, search_term):
     recall_response = requests.get(recall_query)
     recall_data = recall_response.json()
 
+    # gets the results portion of recall data json, otherwise returns json with error
     if "error" not in recall_data:
         recall_data = recall_data["results"]
 
     return recall_data
 
 def fetch_device_data(type, search_term):
-    """
-    Fetch PMA and recall data for a medical company from OpenFDA.
+    '''
+    Fetch device recall and pma data from OpenFDA API
 
     Args:
-        
-        type (str): type of search (limited to: 'company', 'drug', 'device')
-        search (str): The name of the medical company.
+        type (str): type of search term used ("company" or "device")
+        search_term (str): input by the user
 
     Returns:
-        tuple: JSON data for PMAs and recalls.
-    """
-    
+        recall_data (json)
+        pma_data (json)
+
+    '''
+    # request data from openFDA API
     search_term = search_term.replace(" ", "+")
 
     if type == "company":
         pma_query = f'https://api.fda.gov/device/pma.json?search=applicant:"{search_term}"&sort=decision_date:desc&limit=1000'
         recall_query = f'https://api.fda.gov/device/recall.json?search=recalling_firm:"{search_term}"&sort=event_date_posted:desc&limit=1000'
     elif type == "device":
-        pma_query = f'https://api.fda.gov/device/pma.json?search=trade_name:"{search_term}"&search=decision_code:"APPR"$sort=decision_date:desc&limit=1000'
+        pma_query = f'https://api.fda.gov/device/pma.json?search=trade_name:"{search_term}"&sort=decision_date:desc&limit=1000'
         recall_query = f'https://api.fda.gov/device/recall.json?search=product_description:"{search_term}"&sort=event_date_posted:desc&limit=1000'
 
     pma_response = requests.get(pma_query)
@@ -64,6 +67,7 @@ def fetch_device_data(type, search_term):
     pma_data =  pma_response.json()
     recall_data = recall_response.json()
 
+    # gets the results portion of data json, otherwise returns json with error
     if "error" not in pma_data:
         pma_data = pma_data["results"]
 
@@ -72,22 +76,57 @@ def fetch_device_data(type, search_term):
 
     return pma_data, recall_data
     
-def process_pma_data(pma_data):
+def process_pma_data(pma_data, time):
     """
     Process PMA data into a pandas DataFrame.
 
     Args:
         pma_data (list): List of PMA records.
+        cutoff: how many months of a data
 
     Returns:
         pd.DataFrame: Processed DataFrame.
     """
+    # turn pma data json into a dataframe
     df = pd.DataFrame(pma_data)
+
+    # convert decision_date column into datetime
     df['decision_date'] = pd.to_datetime(df['decision_date'].astype("string"))
+
+    # Get today's date
+    today = pd.Timestamp(datetime.now().date())
+
+    # converting time from radio button into number of months (m)
+    m = int(time)
+    '''if time == "1M": m = 1
+    if time == "6M": m = 6
+    if time == "1Y": m = 12
+    if time == "5Y": m = 60    '''
+
+    # Calculate the offset
+    m_months_ago = today - pd.DateOffset(months=m)
+    
+    # ------------------------
+    # FILTERING USING DATETIME
+    # ------------------------
+     # filtering the data till m months ago
+    df = df[(df['decision_date'] >= m_months_ago) & (df['decision_date'] <= today)]
+    # filter data for pma approvals
     df = df[(df['decision_code'] == "APPR") | (df['decision_code'] == "OK30") | (df['decision_code'] == "LE30")]
+
+    # ------------------------
+    # Grouping
+    # ------------------------
+    # group PMAs by date
     approvals_by_date = df.groupby(df['decision_date'].dt.date).size().reset_index(name='count')
     approvals_by_date = approvals_by_date.sort_values(by=['decision_date'])
-    approvals_by_date['decision_date'] = pd.to_datetime(df['decision_date'].astype("string"))
+    
+    # convert decision_date column into datetime
+    approvals_by_date['timestamp'] = pd.to_datetime(df['decision_date'].astype("string"))
+
+    # only get timestamp and count
+    df = df[['timestamp','count']]
+
     return approvals_by_date
 
 def process_recall_data(recall_data):
@@ -109,43 +148,3 @@ def process_recall_data(recall_data):
     recalls_by_date = df.groupby(df['recall_initiation_date'].dt.date).size().reset_index(name='count')
 
     return recalls_by_date
-
-def date_range_filter(time, df):
-
-    today = datetime.datetime.today()
-
-    if time == "1M": m = 1
-    if time == "6M": m = 6
-    if time == "1Y": m = 12
-    if time == "5Y": m = 60
-
-    # Calculate one month from today
-    months_later = today + relativedelta(months=m)
-
-    print("---startoffunction----")
-    print(today)
-    print(months_later)
-    print(type(today))
-    print(type(months_later))
-    print(df.dtypes)
-    print("-------")
-
-    # Filter the dataframe
-    if "decision_date" in df.columns:
-        filtered_df = df[(df['decision_date'] >= today) & (df['decision_date'] < months_later)]
-    if "timestamp" in df.columns:
-        filtered_df = df[(df['timestamp'] >= today) & (df['timestamp'] < months_later)]
-
-    print(filtered_df)
-
-    # offset = datetime.datetime.now() - pd.DateOffset(months=m)
-
-    #if "recall_initiation_date" in df.columns:
-     #   df = df[(df["recall_initiation_date"] >= offset.replace(day=1)) & (df['date'] < offset.replace(day=1) + pd.DateOffset(months=m))]
-
-    #if "decision_date" in df.columns:
-     #   df = df[(df["decision_date"] >= offset.replace(day=1)) & (df['date'] < offset.replace(day=1) + pd.DateOffset(months=m))]
-
-
-    # Filter the dataframe
-    return filtered_df
