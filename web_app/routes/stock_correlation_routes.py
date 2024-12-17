@@ -37,20 +37,15 @@ def stock_correlation_dashboard():
         drug_recall_data = fetch_drug_data("company", company)
         device_pma_data, device_recall_data = fetch_device_data("company", company)
 
-        print(device_recall_data)
         # error checking of no results from OpenFDA API
         if 'error' in drug_recall_data or 'error' in device_recall_data and 'error' in device_pma_data:
             raise Exception('OpenFDA API Error: No results found.')
         
-        #
-        # todo, convert timeoffset and process into one
-        #
+
         # processing data in dataframes
         drugrecall = process_recall_data(drug_recall_data, timeoffset)
         devicerecall = process_recall_data(device_recall_data, timeoffset)
         pma = process_pma_data(device_pma_data, timeoffset)
-
-        print(devicerecall.columns)
 
         # convert everything to dictionary
         stock = stock.to_dict("records")
