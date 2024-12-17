@@ -1,4 +1,4 @@
-from app.FDAdata import fetch_fda_data, process_pma_data, process_recall_data
+from app.FDAdata import fetch_drug_data, fetch_device_data, process_pma_data, process_recall_data
 
 from pandas import DataFrame
 
