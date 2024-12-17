@@ -70,7 +70,7 @@
         // use data from the router!
         var symbol = '{{ symbol }}'
 
-        // get stock_data and pma_data and convert into json
+        // get sock_data and drug_recall_data and convert into json
         var stockData = JSON.parse('{{stock_data | tojson}}') // https://stackoverflow.com/a/45132694/670433
         var drugrecallData = JSON.parse('{{drug_recall_data | tojson}}')
 
@@ -78,7 +78,7 @@
         var dates = stockData.map(obj => obj["timestamp"])
         var closingPrices = stockData.map(obj => obj["adjusted_close"])
         var datesdrugrecall = drugrecallData.map(obj => obj["timestamp"])
-        var count = drugData.map(obj => obj["count"])
+        var count = drugrecallData.map(obj => obj["count"])
 
         // visualize the data
         // see: https://plotly.com/javascript/line-charts/
