@@ -22,12 +22,6 @@ def fetch_stocks_csv(symbol, time):
 
     m = int(time)
 
-    # converting time from radio button into number of months (m)
-    '''if time == "1M": m = 1
-    if time == "6M": m = 6
-    if time == "1Y": m = 12
-    if time == "5Y": m = 60   ''' 
-
     # Calculate the offset
     m_months_ago = today - pd.DateOffset(months=m)
 

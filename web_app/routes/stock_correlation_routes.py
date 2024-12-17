@@ -20,41 +20,6 @@ def stock_correlation_dashboard():
         request_data = dict(request.args)
         print("URL PARAMS:", request_data)
     
-    '''
-    symbol = request_data.get("symbol")
-    company = request_data.get("company")
-    timeoffset = request_data.get("btndaterange")
-
-    stock = fetch_stocks_csv(symbol)
-    
-    drug_recall_data = fetch_drug_data("company", company)
-    device_pma_data, device_recall_data = fetch_device_data("company", company)
-
-
-
-    drugrecall = process_recall_data(drug_recall_data)
-    devicerecall = process_recall_data(device_recall_data)
-    pma = process_pma_data(device_pma_data)
-
-    print(pma.loc[pma['count'] == 14])
-
-    # insert code for timeframes
-
-    stock = date_range_filter(timeoffset, stock)
-    pma = date_range_filter(timeoffset, pma)
-
-    print(pma)
-    print("---------------------")
-    print(stock)
-
-    # convert everything to dictionary
-    stock = stock.to_dict("records")
-    pma = pma.to_dict("records")
-
-    return render_template("stock-correlation-dashboard.html", drug_recall_data=drugrecall, 
-                            device_recall_data = devicerecall, pma_data = pma, 
-                            stock_data = stock, symbol = symbol)'''
-
     try:
         # get data from form
         symbol = request_data.get("symbol")
@@ -80,28 +45,21 @@ def stock_correlation_dashboard():
         # todo, convert timeoffset and process into one
         #
         # processing data in dataframes
-        #drugrecall = process_recall_data(drug_recall_data)
-        #devicerecall = process_recall_data(device_recall_data)
+        drugrecall = process_recall_data(drug_recall_data, timeoffset)
+        devicerecall = process_recall_data(device_recall_data, timeoffset)
         pma = process_pma_data(device_pma_data, timeoffset)
-
-        print(pma.loc[pma['count'] == 14])
-
-        # insert code for timeframes
-
-
-        print(pma)
-        print("---------------------")
-        print(stock)
 
         # convert everything to dictionary
         stock = stock.to_dict("records")
         pma = pma.to_dict("records")
+        drugrecall = drugrecall.to_dict("records")
+        devicerecall = devicerecall.to_dict("records")
         
         flash("Fetched openFDA and AlphaVantage API data!", "success")
         
         # returns data as dataframes
         return render_template("stock-correlation-dashboard.html", 
-                                drug_recall_data=drugrecall, 
+                                drug_recall_data = drugrecall, 
                                 device_recall_data = devicerecall, 
                                 pma_data = pma, 
                                 stock_data = stock, 
@@ -111,4 +69,4 @@ def stock_correlation_dashboard():
         print('OOPS', err)
 
         flash(str(err), "danger")
-        return redirect("/openFDA-Search/drug-recalls")
+        return redirect("/stock-correlation")

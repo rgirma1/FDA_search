@@ -2,7 +2,7 @@
 
 import requests
 import pandas as pd
-import datetime
+from datetime import datetime, timedelta
 import plotly.express as px
 from dateutil.relativedelta import relativedelta
 
@@ -98,10 +98,6 @@ def process_pma_data(pma_data, time):
 
     # converting time from radio button into number of months (m)
     m = int(time)
-    '''if time == "1M": m = 1
-    if time == "6M": m = 6
-    if time == "1Y": m = 12
-    if time == "5Y": m = 60    '''
 
     # Calculate the offset
     m_months_ago = today - pd.DateOffset(months=m)
@@ -125,11 +121,11 @@ def process_pma_data(pma_data, time):
     approvals_by_date['timestamp'] = pd.to_datetime(df['decision_date'].astype("string"))
 
     # only get timestamp and count
-    df = df[['timestamp','count']]
+    approvals_by_date = approvals_by_date[['timestamp','count']]
 
     return approvals_by_date
 
-def process_recall_data(recall_data):
+def process_recall_data(recall_data, time):
     """
     Process recall data into a pandas DataFrame.
 
@@ -139,12 +135,43 @@ def process_recall_data(recall_data):
     Returns:
         pd.DataFrame: Processed DataFrame.
     """
+    
+    # turn recall data json into a dataframe
     df = pd.DataFrame(recall_data)
 
+    # standardizing between device and drug date columns
     if "event_date_initiated" in df.columns:
         df.rename(columns={"event_date_initiated": "recall_initiation_date"}, inplace=True)
-    
+
+    # convert decision_date column into datetime
     df['recall_initiation_date'] = pd.to_datetime(df['recall_initiation_date'].astype("string"))
+
+    # Get today's date
+    today = pd.Timestamp(datetime.now().date())
+
+    # converting time from radio button into number of months (m)
+    m = int(time)
+
+    # Calculate the offset
+    m_months_ago = today - pd.DateOffset(months=m)
+    
+    # ------------------------
+    # FILTERING USING DATETIME
+    # ------------------------
+     # filtering the data till m months ago
+    df = df[(df['recall_initiation_date'] >= m_months_ago) & (df['recall_initiation_date'] <= today)]
+   
+    # ------------------------
+    # Grouping
+    # ------------------------
+    # group recalls by date
     recalls_by_date = df.groupby(df['recall_initiation_date'].dt.date).size().reset_index(name='count')
+    recalls_by_date = recalls_by_date.sort_values(by=['recall_initiation_date'])
+    
+    # convert recall_initiation_date column into datetime
+    recalls_by_date['timestamp'] = pd.to_datetime(df['recall_initiation_date'].astype("string"))
+
+    # only get timestamp and count
+    recalls_by_date = recalls_by_date[['timestamp','count']]
 
     return recalls_by_date

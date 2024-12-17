@@ -2,10 +2,11 @@
 {% set active_page = "stock-correlation" %}
 
 {% block content %}
-    <h1>Stock Correlation</h1>
+    <h1>Stock Correlation Dashboard for {{symbol}}</h1>
 
     <div id="chart-container-pma" height="700px"></div>
     <div id="chart-container-drug-recalls" height="700px"></div>
+    <div id="chart-container-device-recalls" height="700px"></div>
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script type="text/javascript">
@@ -14,48 +15,47 @@
 
         // use data from the router!
         var symbol = '{{ symbol }}'
-        
+
+        // get stock_data and pma_data and convert into json
         var stockData = JSON.parse('{{stock_data | tojson}}') // https://stackoverflow.com/a/45132694/670433
         var pmaData = JSON.parse('{{pma_data | tojson}}')
+        console.log(pmaData)
 
+        //map data from jsons into series
         var dates = stockData.map(obj => obj["timestamp"])
         var closingPrices = stockData.map(obj => obj["adjusted_close"])
-
-        var decision_date = pmaData.map(obj => obj["decision_date"])
+        var datespma = pmaData.map(obj => obj["timestamp"])
         var count = pmaData.map(obj => obj["count"])
-
 
         // visualize the data
         // see: https://plotly.com/javascript/line-charts/
-        
-
-        Plotly.newPlot('chart-container-pma', data, layout);
-
-        
         var stockseries = {
             x: dates,
             y: closingPrices,
-            name: 'yaxis data',
-            type: 'scatter'
+            name: 'Daily Closing Prices'
         }
         var pmaseries = {
-            x: decision_date,
+            x: datespma,
             y: count,
-            name: 'yaxis2 data',
-            yaxis: 'y2',
-            type: 'scatter'
+            name: 'PMAs',
+            yaxis: 'y2'
         }
 
         var data = [stockseries, pmaseries]
         var layout = {
-            title: {text: 'Double Y Axis Example'},
+            title: "Daily Closing Prices vs. Device Premarket Approvals",
+            height: 600,
+            xaxis: {
+                autorange: 'reversed',
+                tickformat: '%b'
+            },
             yaxis: {
                 tickformat: '$' // https://plotly.com/javascript/tick-formatting/
             },
             yaxis2: {
                 title: {
-                text: 'yaxis2 title',
-                font: {color: 'rgb(148, 103, 189)'}
+                    text: 'yaxis2 title',
+                    font: {color: 'rgb(148, 103, 189)'}
                 },
                 tickfont: {color: 'rgb(148, 103, 189)'},
                 overlaying: 'y',
@@ -63,47 +63,62 @@
             }
         }
         Plotly.newPlot("chart-container-pma", data, layout, {responsive: true})
-        
     </script>
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
-    console.log("STOCKS DASHBOARD...")
+        // use data from the router!
+        var symbol = '{{ symbol }}'
 
-    // use data from the router!
-    var symbol = '{{ symbol }}'
-    
-    var stockData = JSON.parse('{{stock_data | tojson}}') // https://stackoverflow.com/a/45132694/670433
-    var pmaData = JSON.parse('{{pma_data | tojson}}')
+        // get stock_data and pma_data and convert into json
+        var stockData = JSON.parse('{{stock_data | tojson}}') // https://stackoverflow.com/a/45132694/670433
+        var drugrecallData = JSON.parse('{{drug_recall_data | tojson}}')
 
-    var pmaDataSorted = pmaData.sort((a, b) => new Date(a["decision_date"]) - new Date(b["decision_date"]))
+        //map data from jsons into series
+        var dates = stockData.map(obj => obj["timestamp"])
+        var closingPrices = stockData.map(obj => obj["adjusted_close"])
+        var datesdrugrecall = drugrecallData.map(obj => obj["timestamp"])
+        var count = drugData.map(obj => obj["count"])
 
-    var dates = stockData.map(obj => obj["timestamp"])
-    var closingPrices = stockData.map(obj => obj["adjusted_close"])
+        // visualize the data
+        // see: https://plotly.com/javascript/line-charts/
+        var stockseries = {
+            x: dates,
+            y: closingPrices,
+            name: 'Daily Closing Prices'
+        }
+        var drugrecallseries = {
+            x: datesdrugrecall,
+            y: count,
+            name: 'Drug Recalls',
+            yaxis: 'y2'
+        }
 
-    var decision_date = pmaDataSorted.map(obj => obj["decision_date"])
-    var count = pmaDataSorted.map(obj => obj["count"])
+        var data = [stockseries, drugrecallseries]
+        var layout = {
+            title: "Daily Closing Prices vs. Drug Recalls",
+            height: 600,
+            xaxis: {
+                autorange: 'reversed',
+                tickformat: '%b'
+            },
+            yaxis: {
+                tickformat: '$' // https://plotly.com/javascript/tick-formatting/
+            },
+            yaxis2: {
+                title: {
+                    text: 'yaxis2 title',
+                    font: {color: 'rgb(148, 103, 189)'}
+                },
+                tickfont: {color: 'rgb(148, 103, 189)'},
+                overlaying: 'y',
+                side: 'right'
+            }
+        }
+        Plotly.newPlot("chart-container-drug-recalls", data, layout, {responsive: true})
 
-    // visualize the data
-    // see: https://plotly.com/javascript/line-charts/
-
-    
-    var pmaseries = {
-        x: decision_date,
-        y: count,
-        mode: "lines+markers"
-    }
-    var data = [pmaseries]
-    var layout = {
-        title: "Daily Closing Prices for Stock: " + symbol,
-        height: 600,
-        yaxis: {
-            tickformat: '$' // https://plotly.com/javascript/tick-formatting/
-        },
-    }
-    Plotly.newPlot("chart-container-drug-recalls", data, layout, {responsive: true})
-
-</script>
+        
+    </script>
 
 
 {% endblock %}
