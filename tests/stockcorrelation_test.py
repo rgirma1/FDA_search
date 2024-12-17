@@ -8,4 +8,4 @@ def test_fetch_stocks_csv():
     df = fetch_stocks_csv("ABT", "60")
 
     assert isinstance(df, DataFrame)
-    assert df.columns.tolist() == ["timestamp", "open", "high", "low", "close", "adjusted_close", "volume", "dividend_amount", "split_coefficient"]
+    assert df.columns.tolist() == ['timestamp','adjusted_close']

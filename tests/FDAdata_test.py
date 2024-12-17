@@ -8,7 +8,7 @@ def test_fetch_drug_data():
     drug_data_zemplar = fetch_drug_data("drug", "zemplar")
 
     assert drug_data_pfizer[0]["recalling_firm"] == "Pfizer Inc."
-    assert drug_data_pfizer[0]["openfda"]["brand_name"][0] == "ZEMPLAR"
+    assert drug_data_zemplar[0]["openfda"]["brand_name"][0] == "ZEMPLAR"
 
 def test_fetch_device_data():
     pma_pfizer, recall_pfizer = fetch_device_data("company", "Pfizer")
